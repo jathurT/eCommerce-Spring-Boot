@@ -44,7 +44,9 @@ public class JwtUtils {
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
                 .path("/api")
                 .maxAge(24 * 60 * 60)
-                .httpOnly(false)
+                .httpOnly(true) // It's more secure to set this to true
+                .secure(true)   // Ensure the cookie is only sent over HTTPS
+                .sameSite("Strict") // Adjust as needed
                 .build();
         return cookie;
     }
@@ -58,18 +60,20 @@ public class JwtUtils {
 
     public String generateTokenFromUsername(String username) {
         return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key())
+                .setSubject(username) // Corrected method name
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(key(), SignatureAlgorithm.HS512) // Specify the signature algorithm
                 .compact();
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser()
-                        .verifyWith((SecretKey) key())
-                .build().parseSignedClaims(token)
-                .getPayload().getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(key()) // Corrected method name
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     private Key key() {
@@ -78,7 +82,10 @@ public class JwtUtils {
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken);
+            Jwts.parserBuilder()
+                    .setSigningKey(key()) // Corrected method name
+                    .build()
+                    .parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
