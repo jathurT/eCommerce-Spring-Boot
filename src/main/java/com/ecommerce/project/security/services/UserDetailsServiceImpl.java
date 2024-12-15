@@ -9,19 +9,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//Its primary purpose is to load user-specific data during the authentication process.
+// It has one method named loadUserByUsername() which can be overridden to customize the process of finding the user.
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
-    UserRepository userRepository;
+  @Autowired
+  UserRepository userRepository;
 
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+  @Override
+  @Transactional
+  // Ensures that the database query to load the user is executed within a transaction. If any error happens, the transaction will be rolled back. This ensures consistency in case of errors.
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user = userRepository.findByUserName(username)
+        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-        return UserDetailsImpl.build(user);
-    }
+    return UserDetailsImpl.build(user);
+  }
 
 
 }

@@ -16,7 +16,7 @@ import org.springframework.web.util.WebUtils;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
-
+// Handles JWT creation, validation, and extraction.
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
@@ -64,7 +64,7 @@ public class JwtUtils {
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS512) // Specify the signature algorithm
-                .compact();
+                .compact(); // Serializes the JWT into a string that can be sent over the network
     }
 
     public String getUserNameFromJwtToken(String token) {
@@ -81,6 +81,7 @@ public class JwtUtils {
     }
 
     public boolean validateJwtToken(String authToken) {
+//        This parser is responsible for decoding the JWT from its string format back into its components (header, payload, and signature).
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key()) // Corrected method name

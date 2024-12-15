@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+// Handles unauthorized access attempts by sending a 401 error response.
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+// Intercepts incoming requests to validate JWT tokens and set the security context.
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
